@@ -1,5 +1,3 @@
-use crate::drunk;
-
 use super::drunk::Drunk;
 use super::location::Location;
 use std::collections::HashMap;
