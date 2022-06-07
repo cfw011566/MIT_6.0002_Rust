@@ -1,10 +1,11 @@
+use std::fmt;
+
 #[derive(Debug, Clone)]
 pub struct Location {
     x: f64,
     y: f64,
 }
 
-use std::fmt;
 impl fmt::Display for Location {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "<{},{}>", self.x, self.y)

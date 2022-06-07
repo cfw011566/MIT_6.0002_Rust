@@ -1,5 +1,4 @@
-use super::drunk::Drunk;
-use super::location::Location;
+use crate::prelude::*;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]

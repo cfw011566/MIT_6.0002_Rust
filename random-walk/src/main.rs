@@ -1,11 +1,14 @@
-mod location;
-use location::Location;
-
 mod drunk;
-use drunk::Drunk;
-
 mod field;
-use field::Field;
+mod location;
+
+mod prelude {
+    pub use crate::drunk::*;
+    pub use crate::field::*;
+    pub use crate::location::*;
+}
+
+use prelude::*;
 
 fn main() {
     test_sanity();
@@ -33,7 +36,7 @@ fn test_sanity() {
         Location::new(1.0, 0.0),
         Location::new(-1.0, 0.0),
     ];
-    let usual_drunk = Drunk::new(String::from("usual"), &steps);
+    let usual_drunk = Drunk::new("usual".to_owned(), &steps);
     println!("{}", usual_drunk);
 
     let steps = vec![
@@ -42,7 +45,7 @@ fn test_sanity() {
         Location::new(1.0, 0.0),
         Location::new(-1.0, 0.0),
     ];
-    let masochist_drunk = Drunk::new(String::from("masochist"), &steps);
+    let masochist_drunk = Drunk::new("masochist".to_owned(), &steps);
     println!("{}", masochist_drunk);
 
     let mut f = Field::new();
@@ -97,7 +100,7 @@ fn test_walk() {
         Location::new(1.0, 0.0),
         Location::new(-1.0, 0.0),
     ];
-    let usual_drunk = Drunk::new(String::from("usual"), &steps);
+    let usual_drunk = Drunk::new("usual".to_owned(), &steps);
 
     let steps = vec![
         Location::new(0.0, 1.1),
@@ -105,7 +108,7 @@ fn test_walk() {
         Location::new(1.0, 0.0),
         Location::new(-1.0, 0.0),
     ];
-    let masochist_drunk = Drunk::new(String::from("masochist"), &steps);
+    let masochist_drunk = Drunk::new("masochist".to_owned(), &steps);
 
     let test_steps = vec![1000, 10000];
     println!("usual drunk test");
