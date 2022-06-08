@@ -145,13 +145,17 @@ fn sim_all(
         .caption(title, ("sans-serif", 24).into_font())
         .x_label_area_size::<u32>(20)
         .y_label_area_size::<u32>(40)
-        .build_cartesian_2d(0f32..100_000f32, 0f32..5_000f32)?;
+        .build_cartesian_2d(0f32..100_000f32, 0f32..6_000f32)?;
 
     chart
         .configure_mesh()
         .x_labels(5)
         .y_labels(5)
-        .y_label_formatter(&|x| format!("{:.2}", x))
+        .y_label_formatter(&|x| format!("{:.0}", x))
+        .x_label_formatter(&|x| format!("{:.0}", x))
+        .y_desc("Distance from Origin")
+        .x_desc("Number of Steps")
+        .axis_desc_style(("sans-serif", 18))
         .draw()?;
 
     for (i, drunk) in drunks.iter().enumerate() {
@@ -171,15 +175,27 @@ fn sim_all(
         chart.draw_series(LineSeries::new(points.clone(), &color))?;
 
         if i == 0 {
-            chart.draw_series(points.iter().map(|point| Circle::new(*point, 5, &RED)))?;
+            chart
+                .draw_series(points.iter().map(|point| Circle::new(*point, 5, &RED)))?
+                .label(drunk.name())
+                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
         } else {
-            chart.draw_series(
-                points
-                    .iter()
-                    .map(|point| TriangleMarker::new(*point, 5, &GREEN)),
-            )?;
+            chart
+                .draw_series(
+                    points
+                        .iter()
+                        .map(|point| TriangleMarker::new(*point, 5, &GREEN)),
+                )?
+                .label(drunk.name())
+                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &GREEN));
         };
     }
+    chart
+        .configure_series_labels()
+        .border_style(&BLACK)
+        .background_style(&WHITE.mix(0.8))
+        .label_font(("sans-serif", 18))
+        .draw()?;
 
     Ok(())
 }
