@@ -20,6 +20,16 @@ fn main() {
 
     println!("plot mean value of different drunk");
     test_plot_all();
+
+    println!("trace walk");
+    let mut fields: Vec<Field> = Vec::new();
+    let field = Field::new();
+    fields.push(field);
+    let mut field = Field::new();
+    field.set_worm_holes(1000, 100, 100);
+    field.set_name("Odd Field".to_string());
+    fields.push(field);
+    trace_walk(&mut fields, 500, 100.0, 100.0)
 }
 
 fn walk(f: &mut Field, d: &Drunk, num_steps: u32) -> f64 {
@@ -220,4 +230,57 @@ fn test_plot_all() {
     let drunks = vec![usual_drunk, masochist_drunk];
     let num_steps = vec![10, 100, 1000, 10_000, 100_000];
     sim_all(&drunks, &num_steps, 100);
+}
+
+fn trace_walk(fields: &mut Vec<Field>, num_steps: u32, x_range: f64, y_range: f64) {
+    let root_area = BitMapBackend::new("trace_walk.png", (1024, 1024)).into_drawing_area();
+    root_area.fill(&WHITE).unwrap();
+
+    let title = format!("Spots Visited on Walk {} steps", num_steps);
+    let mut ctx = ChartBuilder::on(&root_area)
+        .set_label_area_size::<u32>(LabelAreaPosition::Left, 40)
+        .set_label_area_size::<u32>(LabelAreaPosition::Bottom, 40)
+        .caption(title, ("sans-serif", 24))
+        .build_cartesian_2d(-x_range..x_range, -y_range..y_range)
+        .unwrap();
+
+    ctx.configure_mesh().draw().unwrap();
+
+    for (i, field) in fields.iter().enumerate() {
+        let mut field = field.clone();
+        let steps = vec![
+            Location::new(0.0, 1.0),
+            Location::new(0.0, -1.0),
+            Location::new(1.0, 0.0),
+            Location::new(-1.0, 0.0),
+        ];
+        let usual_drunk = Drunk::new("usual".to_owned(), &steps);
+        let origin = Location::new(0.0, 0.0);
+        field.add_drunk(&usual_drunk, &origin);
+        let mut points: Vec<(f64, f64)> = Vec::new();
+        for _ in 0..num_steps {
+            field.move_drunk(&usual_drunk);
+            let loc = field.get_location(&usual_drunk);
+            points.push((loc.x(), loc.y()));
+        }
+
+        if i == 0 {
+            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &RED)))
+                .unwrap()
+                .label(field.name())
+                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+        } else {
+            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &GREEN)))
+                .unwrap()
+                .label(field.name())
+                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &GREEN));
+        }
+    }
+
+    ctx.configure_series_labels()
+        .border_style(&BLACK)
+        .background_style(&WHITE.mix(0.8))
+        .label_font(("sans-serif", 18))
+        .draw()
+        .unwrap();
 }
