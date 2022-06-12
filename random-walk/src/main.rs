@@ -21,6 +21,9 @@ fn main() {
     println!("plot mean value of different drunk");
     test_plot_all();
 
+    println!("plot location");
+    test_plot_locs();
+
     println!("trace walk");
     let mut fields: Vec<Field> = Vec::new();
     let field = Field::new();
@@ -232,6 +235,91 @@ fn test_plot_all() {
     sim_all(&drunks, &num_steps, 100);
 }
 
+fn get_final_locs(num_steps: u32, num_trials: u32, drunk: &Drunk) -> Vec<Location> {
+    let mut locs: Vec<Location> = Vec::new();
+    for _ in 0..num_trials {
+        let mut f = Field::new();
+        let origin = Location::new(0.0, 0.0);
+        f.add_drunk(drunk, &origin);
+        for _ in 0..num_steps {
+            f.move_drunk(drunk);
+        }
+        let loc = f.get_location(drunk);
+        locs.push(loc);
+    }
+    locs
+}
+
+fn plot_locs(drunks: &Vec<Drunk>, num_steps: u32, num_trials: u32) {
+    let root_area = BitMapBackend::new("scatter.png", (1024, 1024)).into_drawing_area();
+    root_area.fill(&WHITE).unwrap();
+
+    let title = format!("Location at End of Walks ({} steps)", num_steps);
+    let mut ctx = ChartBuilder::on(&root_area)
+        .set_label_area_size::<u32>(LabelAreaPosition::Left, 40)
+        .set_label_area_size::<u32>(LabelAreaPosition::Bottom, 40)
+        .caption(title, ("sans-serif", 24))
+        .build_cartesian_2d(-1000.0..1000.0, -1000.0..1000.0)
+        .unwrap();
+
+    ctx.configure_mesh().draw().unwrap();
+
+    for (i, drunk) in drunks.iter().enumerate() {
+        let locs = get_final_locs(num_steps, num_trials, drunk);
+        let sum_x: f64 = locs.iter().map(|l| l.x()).sum();
+        let sum_y: f64 = locs.iter().map(|l| l.y()).sum();
+        let mean_x = sum_x / locs.len() as f64;
+        let mean_y = sum_y / locs.len() as f64;
+        let legend_text = format!("{} mean abs dist = <{}, {}>", drunk.name(), mean_x, mean_y);
+
+        let mut points: Vec<(f64, f64)> = Vec::new();
+        for loc in locs {
+            points.push((loc.x(), loc.y()));
+        }
+
+        if i == 0 {
+            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &RED)))
+                .unwrap()
+                .label(legend_text)
+                .legend(|(x, y)| Circle::new((x + 10, y), 5, &RED));
+        } else {
+            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &GREEN)))
+                .unwrap()
+                .label(legend_text)
+                .legend(|(x, y)| Circle::new((x + 10, y), 5, &GREEN));
+        }
+    }
+
+    ctx.configure_series_labels()
+        .position(SeriesLabelPosition::LowerRight)
+        .border_style(&BLACK)
+        .background_style(&WHITE.mix(0.8))
+        .label_font(("sans-serif", 18))
+        .draw()
+        .unwrap();
+}
+
+fn test_plot_locs() {
+    let steps = vec![
+        Location::new(0.0, 1.0),
+        Location::new(0.0, -1.0),
+        Location::new(1.0, 0.0),
+        Location::new(-1.0, 0.0),
+    ];
+    let usual_drunk = Drunk::new("usual".to_owned(), &steps);
+
+    let steps = vec![
+        Location::new(0.0, 1.1),
+        Location::new(0.0, -0.9),
+        Location::new(1.1, 0.0),
+        Location::new(-0.9, 0.0),
+    ];
+    let masochist_drunk = Drunk::new("masochist".to_owned(), &steps);
+
+    let drunks = vec![usual_drunk, masochist_drunk];
+    plot_locs(&drunks, 10_000, 1_000);
+}
+
 fn trace_walk(fields: &mut Vec<Field>, num_steps: u32, x_range: f64, y_range: f64) {
     let root_area = BitMapBackend::new("trace_walk.png", (1024, 1024)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
@@ -268,16 +356,17 @@ fn trace_walk(fields: &mut Vec<Field>, num_steps: u32, x_range: f64, y_range: f6
             ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &RED)))
                 .unwrap()
                 .label(field.name())
-                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+                .legend(|(x, y)| Circle::new((x + 10, y), 5, &RED));
         } else {
             ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &GREEN)))
                 .unwrap()
                 .label(field.name())
-                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &GREEN));
+                .legend(|(x, y)| Circle::new((x + 10, y), 5, &GREEN));
         }
     }
 
     ctx.configure_series_labels()
+        .position(SeriesLabelPosition::LowerRight)
         .border_style(&BLACK)
         .background_style(&WHITE.mix(0.8))
         .label_font(("sans-serif", 18))
