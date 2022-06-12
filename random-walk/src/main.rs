@@ -283,10 +283,10 @@ fn plot_locs(drunks: &Vec<Drunk>, num_steps: u32, num_trials: u32) {
                 .label(legend_text)
                 .legend(|(x, y)| Circle::new((x + 10, y), 5, &RED));
         } else {
-            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &GREEN)))
+            ctx.draw_series(points.iter().map(|point| Cross::new(*point, 5, &GREEN)))
                 .unwrap()
                 .label(legend_text)
-                .legend(|(x, y)| Circle::new((x + 10, y), 5, &GREEN));
+                .legend(|(x, y)| Cross::new((x + 10, y), 5, &GREEN));
         }
     }
 
