@@ -150,7 +150,7 @@ fn sim_all(
     num_trials: u32,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("points.png", (1024, 768)).into_drawing_area();
-    root.fill(&WHITE);
+    root.fill(&WHITE)?;
     let root = root.margin::<u32, u32, u32, u32>(20, 20, 20, 20);
     let title = format!("Mean Distance from Origin {num_trials} trials");
 
@@ -232,7 +232,7 @@ fn test_plot_all() {
 
     let drunks = vec![usual_drunk, masochist_drunk];
     let num_steps = vec![10, 100, 1000, 10_000, 100_000];
-    sim_all(&drunks, &num_steps, 100);
+    sim_all(&drunks, &num_steps, 100).unwrap();
 }
 
 fn get_final_locs(num_steps: u32, num_trials: u32, drunk: &Drunk) -> Vec<Location> {
