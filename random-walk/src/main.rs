@@ -277,17 +277,14 @@ fn plot_locs(drunks: &Vec<Drunk>, num_steps: u32, num_trials: u32) {
             points.push((loc.x(), loc.y()));
         }
 
-        if i == 0 {
-            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &RED)))
-                .unwrap()
-                .label(legend_text)
-                .legend(|(x, y)| Circle::new((x + 10, y), 5, &RED));
-        } else {
-            ctx.draw_series(points.iter().map(|point| Cross::new(*point, 5, &GREEN)))
-                .unwrap()
-                .label(legend_text)
-                .legend(|(x, y)| Cross::new((x + 10, y), 5, &GREEN));
-        }
+        ctx.draw_series(
+            points
+                .iter()
+                .map(|point| Cross::new(*point, 5, &Palette99::pick(i))),
+        )
+        .unwrap()
+        .label(legend_text)
+        .legend(move |(x, y)| Cross::new((x + 10, y), 5, &Palette99::pick(i)));
     }
 
     ctx.configure_series_labels()
