@@ -355,10 +355,10 @@ fn trace_walk(fields: &mut Vec<Field>, num_steps: u32, x_range: f64, y_range: f6
                 .label(field.name())
                 .legend(|(x, y)| Circle::new((x + 10, y), 5, &RED));
         } else {
-            ctx.draw_series(points.iter().map(|point| Circle::new(*point, 5, &GREEN)))
+            ctx.draw_series(points.iter().map(|point| Cross::new(*point, 5, &GREEN)))
                 .unwrap()
                 .label(field.name())
-                .legend(|(x, y)| Circle::new((x + 10, y), 5, &GREEN));
+                .legend(|(x, y)| Cross::new((x + 10, y), 5, &GREEN));
         }
     }
 
