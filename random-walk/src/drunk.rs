@@ -15,7 +15,7 @@ impl fmt::Display for Drunk {
 }
 
 impl Drunk {
-    pub fn new(name: String, steps: &Vec<Location>) -> Drunk {
+    pub fn new(name: String, steps: &Vec<Location>) -> Self {
         Self {
             name: name.clone(),
             step_choice: steps.clone(),
@@ -24,12 +24,12 @@ impl Drunk {
 
     pub fn take_step(&self) -> (f64, f64) {
         let len = self.step_choice.len();
-        let n: usize = rand::thread_rng().gen_range(0..len);
+        let n = rand::thread_rng().gen_range(0..len);
         let step = &self.step_choice[n];
         (step.x(), step.y())
     }
 
-    pub fn name(&self) -> &String {
+    pub fn name(&self) -> &str {
         &self.name
     }
 }

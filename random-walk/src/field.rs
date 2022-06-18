@@ -43,7 +43,7 @@ impl Field {
             let key = format!("{}", loc);
             if let Some(next_loc) = self.worm_holes.get(&key) {
                 let loc = next_loc.clone();
-                self.drunks.insert(drunk.name().to_string(), loc);
+                self.drunks.insert(name, loc);
             } else {
                 self.drunks.insert(name, loc);
             }
@@ -54,7 +54,7 @@ impl Field {
         self.name = name;
     }
 
-    pub fn name(&self) -> &String {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
