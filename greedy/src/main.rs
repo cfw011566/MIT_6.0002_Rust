@@ -1,5 +1,6 @@
 mod food;
 use food::Food;
+use std::cmp::Ordering;
 
 fn main() {
     let names = vec![
@@ -28,21 +29,27 @@ fn main() {
     test_greedys(&foods, 1000.0);
 }
 
-fn test_greedys(foods: &Vec<Food>, max_units: f64) {
-    println!("Use greedy by value to allocate {} calories", max_units);
+type CompFunc = dyn Fn(&Food, &Food) -> Ordering;
+
+fn test_greedy(foods: &Vec<Food>, constraint: f64, comp_func: &CompFunc) {
     let mut foods = foods.clone();
-    let func = Box::new(|a: &Food, b: &Food| {
-        let a_value = a.value();
-        let b_value = b.value();
-        b_value.partial_cmp(&a_value).unwrap()
-    });
-    foods.sort_by(func);
-    let (taken, val) = greedy(&foods, max_units);
+    foods.sort_by(comp_func);
+    let (taken, val) = greedy(&foods, constraint);
     println!("Total value of items taken = {}", val);
     for f in taken.iter() {
         println!("  {}", f);
     }
     println!();
+}
+
+fn test_greedys(foods: &Vec<Food>, max_units: f64) {
+    println!("Use greedy by value to allocate {} calories", max_units);
+    let func = Box::new(|a: &Food, b: &Food| {
+        let a_value = a.value();
+        let b_value = b.value();
+        b_value.partial_cmp(&a_value).unwrap()
+    });
+    test_greedy(&foods, max_units, &func);
 
     println!("Use greedy by cost to allocate {} calories", max_units);
     let func = Box::new(|a: &Food, b: &Food| {
@@ -50,13 +57,7 @@ fn test_greedys(foods: &Vec<Food>, max_units: f64) {
         let b_calories = b.calories();
         a_calories.partial_cmp(&b_calories).unwrap()
     });
-    foods.sort_by(func);
-    let (taken, val) = greedy(&foods, max_units);
-    println!("Total value of items taken = {}", val);
-    for f in taken.iter() {
-        println!("  {}", f);
-    }
-    println!();
+    test_greedy(&foods, max_units, &func);
 
     println!("Use greedy by density to allocate {} calories", max_units);
     let func = Box::new(|a: &Food, b: &Food| {
@@ -64,13 +65,7 @@ fn test_greedys(foods: &Vec<Food>, max_units: f64) {
         let b_density = b.density();
         b_density.partial_cmp(&a_density).unwrap()
     });
-    foods.sort_by(func);
-    let (taken, val) = greedy(&foods, max_units);
-    println!("Total value of items taken = {}", val);
-    for f in taken.iter() {
-        println!("  {}", f);
-    }
-    println!();
+    test_greedy(&foods, max_units, &func);
 }
 
 fn greedy(items: &Vec<Food>, max_cost: f64) -> (Vec<Food>, f64) {
