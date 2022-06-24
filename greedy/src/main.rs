@@ -44,27 +44,27 @@ fn test_greedy(foods: &Vec<Food>, constraint: f64, comp_func: &CompFunc) {
 
 fn test_greedys(foods: &Vec<Food>, max_units: f64) {
     println!("Use greedy by value to allocate {} calories", max_units);
-    let func = Box::new(|a: &Food, b: &Food| {
+    let func = |a: &Food, b: &Food| {
         let a_value = a.value();
         let b_value = b.value();
         b_value.partial_cmp(&a_value).unwrap()
-    });
+    };
     test_greedy(&foods, max_units, &func);
 
     println!("Use greedy by cost to allocate {} calories", max_units);
-    let func = Box::new(|a: &Food, b: &Food| {
+    let func = |a: &Food, b: &Food| {
         let a_calories = a.calories();
         let b_calories = b.calories();
         a_calories.partial_cmp(&b_calories).unwrap()
-    });
+    };
     test_greedy(&foods, max_units, &func);
 
     println!("Use greedy by density to allocate {} calories", max_units);
-    let func = Box::new(|a: &Food, b: &Food| {
+    let func = |a: &Food, b: &Food| {
         let a_density = a.density();
         let b_density = b.density();
         b_density.partial_cmp(&a_density).unwrap()
-    });
+    };
     test_greedy(&foods, max_units, &func);
 }
 
