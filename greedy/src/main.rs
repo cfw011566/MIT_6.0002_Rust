@@ -4,15 +4,7 @@ use std::cmp::Ordering;
 
 fn main() {
     let names = vec![
-        "wine".to_string(),
-        "beer".to_string(),
-        "pizza".to_string(),
-        "burger".to_string(),
-        "fries".to_string(),
-        "cola".to_string(),
-        "apple".to_string(),
-        "donut".to_string(),
-        "cake".to_string(),
+        "wine", "beer", "pizza", "burger", "fries", "cola", "apple", "donut", "cake",
     ];
     let values = vec![89.0, 90.0, 95.0, 100.0, 90.0, 79.0, 50.0, 10.0];
     let calories = vec![123.0, 154.0, 258.0, 354.0, 365.0, 150.0, 95.0, 195.0];
@@ -73,9 +65,9 @@ fn greedy(items: &Vec<Food>, max_cost: f64) -> (Vec<Food>, f64) {
     let mut total_cost: f64 = 0.0;
 
     for item in items.iter() {
-        let name = item.name().clone();
-        let calories = item.calories().clone();
-        let value = item.value().clone();
+        let name = item.name();
+        let calories = item.calories();
+        let value = item.value();
         if (total_cost + calories) <= max_cost {
             results.push(Food::new(name, value, calories));
             total_cost += calories;

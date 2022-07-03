@@ -1,5 +1,4 @@
-#[derive(Debug, Clone)]
-//#[derive(Debug, Eq, Ord, PartialEq, PartialOrd, Clone)]
+#[derive(Debug)]
 pub struct Food {
     name: String,
     value: f64,
@@ -7,18 +6,18 @@ pub struct Food {
 }
 
 impl Food {
-    pub fn new(name: String, value: f64, calories: f64) -> Self {
+    pub fn new(name: &str, value: f64, calories: f64) -> Self {
         Self {
-            name,
+            name: name.to_string(),
             value,
             calories,
         }
     }
 
-    pub fn build_menu(names: &Vec<String>, values: &Vec<f64>, calories: &Vec<f64>) -> Vec<Food> {
+    pub fn build_menu(names: &Vec<&str>, values: &Vec<f64>, calories: &Vec<f64>) -> Vec<Food> {
         let mut foods: Vec<Food> = Vec::new();
         for (i, &val) in values.iter().enumerate() {
-            foods.push(Food::new(names[i].to_string(), val, calories[i]));
+            foods.push(Food::new(names[i], val, calories[i]));
         }
         foods
     }
@@ -32,16 +31,16 @@ impl fmt::Display for Food {
 }
 
 impl Food {
-    pub fn name(&self) -> &String {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
-    pub fn value(&self) -> &f64 {
-        &self.value
+    pub fn value(&self) -> f64 {
+        self.value
     }
 
-    pub fn calories(&self) -> &f64 {
-        &self.calories
+    pub fn calories(&self) -> f64 {
+        self.calories
     }
 
     pub fn density(&self) -> f64 {
